@@ -1,0 +1,133 @@
+.payment-page {
+    padding-top: var(--space-xl);
+}
+
+.payment-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: var(--space-xl);
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.payment-form h2 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: var(--space-lg);
+}
+
+.payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+}
+
+.payment-method {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    cursor: pointer;
+    border: 2px solid var(--gray-100);
+    padding: var(--space-md) var(--space-lg);
+}
+
+.payment-method.selected {
+    border-color: var(--orange-500);
+    background: var(--orange-50);
+}
+
+.payment-method-icon {
+    font-size: 1.3rem;
+}
+
+.payment-method-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+.payment-radio {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--gray-300);
+    position: relative;
+}
+
+.payment-radio.active {
+    border-color: var(--orange-500);
+}
+
+.payment-radio.active::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--orange-500);
+}
+
+.payment-phone {
+    margin-bottom: var(--space-lg);
+}
+
+.payment-security {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+    font-size: 0.82rem;
+    color: var(--gray-500);
+    justify-content: center;
+}
+
+.processing-text {
+    animation: pulse 1.5s infinite;
+}
+
+/* Sidebar */
+.payment-sidebar .card h3 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: var(--space-md);
+}
+
+/* Success State */
+.payment-success {
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: var(--space-2xl) 0;
+}
+
+.success-icon {
+    margin-bottom: var(--space-lg);
+}
+
+.payment-success h1 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--success);
+    margin-bottom: var(--space-sm);
+}
+
+.payment-success>p {
+    color: var(--gray-500);
+    margin-bottom: var(--space-xl);
+}
+
+.success-details {
+    text-align: left;
+    margin-bottom: var(--space-lg);
+}
+
+@media (max-width: 768px) {
+    .payment-layout {
+        grid-template-columns: 1fr;
+    }
+}
