@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+  MECHANIC
+}
+
+enum ServiceType {
+  STANDARD
+  PREMIUM
+}
+
+enum MissionStatus {
+  PENDING
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum InventoryStatus {
+  OPTIMAL
+  LOW
+  CRITICAL
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  name      String
+  phone     String?
+  role      Role      @default(CLIENT)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  vehicles  Vehicle[]
+  missions  Mission[] @relation("ClientMissions")
+  assignedMissions Mission[] @relation("MechanicMissions")
+}
+
+model Vehicle {
+  id           String    @id @default(uuid())
+  brand        String
+  model        String
+  year         Int
+  mileage      Int
+  licensePlate String    @unique
+  ownerId      String
+  owner        User      @relation(fields: [ownerId], references: [id])
+  missions     Mission[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Mission {
+  id          String        @id @default(uuid()) // On pourra générer un VG-XXXX côté application
+  serviceType ServiceType   @default(STANDARD)
+  oilBrand    String?
+  status      MissionStatus @default(PENDING)
+  date        DateTime
+  time        String
+  commune     String
+  address     String
+  totalPrice  Float
+  clientId    String
+  client      User          @relation("ClientMissions", fields: [clientId], references: [id])
+  vehicleId   String
+  vehicle     Vehicle       @relation(fields: [vehicleId], references: [id])
+  mechanicId  String?
+  mechanic    User?         @relation("MechanicMissions", fields: [mechanicId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model InventoryItem {
+  id        String          @id @default(uuid())
+  name      String
+  category  String
+  stock     Int
+  unit      String
+  price     Float
+  status    InventoryStatus @default(OPTIMAL)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
