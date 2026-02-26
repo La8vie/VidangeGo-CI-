@@ -84,7 +84,7 @@ export const getStats = async (req, res) => {
 
         const completedMissions = missions.filter(m => m.status === 'COMPLETED');
         const totalRevenue = completedMissions.reduce((acc, m) => acc + m.totalPrice, 0);
-        const lowStockItems = inventory.filter(i => i.quantity < 10);
+        const lowStockItems = inventory.filter(i => i.stock < 10);
 
         // Données pour le graphique (7 derniers jours simplifiés)
         const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];

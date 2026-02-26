@@ -10,6 +10,11 @@ import inventoryRoutes from './routes/inventoryRoutes.js';
 
 dotenv.config();
 
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+    console.error('FATAL ERROR: JWT_SECRET est requis en production.');
+    process.exit(1);
+}
+
 const app = express();
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 5000;
@@ -39,9 +44,12 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'UP', timestamp: new Date() });
 });
 
-// Lancement du serveur
-app.listen(PORT, () => {
-    console.log(`✅ Serveur VidangeGo démarré sur http://localhost:${PORT}`);
-});
+// Lancement du serveur (seulement en local)
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`✅ Serveur VidangeGo démarré sur http://localhost:${PORT}`);
+    });
+}
 
-export { app, prisma };
+export default app;
+export { prisma };
