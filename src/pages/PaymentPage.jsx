@@ -17,6 +17,19 @@ export default function PaymentPage() {
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
 
+    const lastBooking = (() => {
+        try {
+            return JSON.parse(localStorage.getItem('lastBooking') || 'null');
+        } catch {
+            return null;
+        }
+    })();
+
+    const amount = typeof lastBooking?.totalPrice === 'number' ? lastBooking.totalPrice : 0;
+    const serviceLabel = lastBooking?.service ? (lastBooking.service === 'premium' ? 'Premium' : 'Standard') : '';
+    const locationLabel = lastBooking?.commune ? `${lastBooking.commune}${lastBooking.address ? `, ${lastBooking.address}` : ''}` : '';
+    const slotLabel = lastBooking?.date ? `${lastBooking.date}${lastBooking.time ? ` à ${lastBooking.time}` : ''}` : '';
+
     const handlePay = (e) => {
         e.preventDefault();
         setProcessing(true);
@@ -38,7 +51,7 @@ export default function PaymentPage() {
                         <p>Votre vidange est programmée. Un mécanicien sera chez vous à l'heure prévue.</p>
                         <div className="card success-details">
                             <div className="summary-row"><span>Référence</span><strong>#VGO-2026-0842</strong></div>
-                            <div className="summary-row"><span>Montant</span><strong>6 500 FCFA</strong></div>
+                            <div className="summary-row"><span>Montant</span><strong>{amount.toLocaleString()} FCFA</strong></div>
                             <div className="summary-row"><span>Moyen de paiement</span><strong>{paymentMethods.find(m => m.id === method)?.name}</strong></div>
                         </div>
                         <p className="text-gray" style={{ fontSize: '0.88rem', margin: '16px 0' }}>
@@ -98,7 +111,7 @@ export default function PaymentPage() {
                             {processing ? (
                                 <span className="processing-text">⏳ Traitement en cours…</span>
                             ) : (
-                                <>Payer 6 500 FCFA <ArrowRight size={18} /></>
+                                <>Payer {amount.toLocaleString()} FCFA <ArrowRight size={18} /></>
                             )}
                         </button>
 
@@ -111,11 +124,10 @@ export default function PaymentPage() {
                     <div className="payment-sidebar">
                         <div className="card">
                             <h3>Résumé de commande</h3>
-                            <div className="summary-row"><span>Service</span><strong>Premium</strong></div>
-                            <div className="summary-row"><span>Véhicule</span><strong>Toyota Corolla 2019</strong></div>
-                            <div className="summary-row"><span>Lieu</span><strong>Cocody, Riviera 3</strong></div>
-                            <div className="summary-row"><span>Créneau</span><strong>25 Fév, 10:00</strong></div>
-                            <div className="summary-row summary-total"><span>Total</span><strong>6 500 FCFA</strong></div>
+                            <div className="summary-row"><span>Service</span><strong>{serviceLabel || '—'}</strong></div>
+                            <div className="summary-row"><span>Lieu</span><strong>{locationLabel || '—'}</strong></div>
+                            <div className="summary-row"><span>Créneau</span><strong>{slotLabel || '—'}</strong></div>
+                            <div className="summary-row summary-total"><span>Total</span><strong>{amount.toLocaleString()} FCFA</strong></div>
                         </div>
                     </div>
                 </div>

@@ -4,11 +4,15 @@ import { ArrowRight, Car } from 'lucide-react';
 import { authService } from '../services/api';
 import './LoginPage.css';
 
-export default function LoginPage() {
+export default function RegisterPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    const [name, setName] = useState('');
+    const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -16,12 +20,18 @@ export default function LoginPage() {
         setError('');
         try {
             setLoading(true);
-            const { token, user } = await authService.login({ email, password });
+            const payload = {
+                name,
+                email,
+                password,
+                ...(phone ? { phone } : {}),
+            };
+            const { token, user } = await authService.register(payload);
             localStorage.setItem('token', token);
             localStorage.setItem('user', JSON.stringify(user));
             navigate('/dashboard');
         } catch (err) {
-            setError(err?.message || 'Erreur lors de la connexion');
+            setError(err?.message || "Erreur lors de l'inscription");
         } finally {
             setLoading(false);
         }
@@ -32,8 +42,8 @@ export default function LoginPage() {
             <div className="login-left">
                 <div className="login-left-content">
                     <Car size={48} color="white" />
-                    <h2>Bienvenue sur VidangeGo CI</h2>
-                    <p>La vidange à domicile, simplifiée.</p>
+                    <h2>Créer votre compte VidangeGo CI</h2>
+                    <p>Inscrivez-vous pour réserver une vidange à domicile.</p>
                     <div className="login-features">
                         <div className="login-feature">✓ Service en 30 minutes</div>
                         <div className="login-feature">✓ Paiement Mobile Money</div>
@@ -50,11 +60,35 @@ export default function LoginPage() {
                         <span>VidangeGo <span className="brand-ci">CI</span></span>
                     </Link>
 
-                    <h1>Connexion</h1>
+                    <h1>Inscription</h1>
 
                     {error && (
                         <p className="login-subtitle" style={{ color: 'var(--danger, #E53E3E)' }}>{error}</p>
                     )}
+
+                    <div className="input-group" style={{ marginTop: '12px' }}>
+                        <label>Nom</label>
+                        <input
+                            type="text"
+                            className="input"
+                            placeholder="Votre nom"
+                            value={name}
+                            onChange={e => setName(e.target.value)}
+                            autoFocus
+                            required
+                        />
+                    </div>
+
+                    <div className="input-group" style={{ marginTop: '12px' }}>
+                        <label>Téléphone (optionnel)</label>
+                        <input
+                            type="tel"
+                            className="input"
+                            placeholder="Ex: 0102030405"
+                            value={phone}
+                            onChange={e => setPhone(e.target.value)}
+                        />
+                    </div>
 
                     <div className="input-group" style={{ marginTop: '12px' }}>
                         <label>Email</label>
@@ -64,7 +98,6 @@ export default function LoginPage() {
                             placeholder="ex: nom@email.com"
                             value={email}
                             onChange={e => setEmail(e.target.value)}
-                            autoFocus
                             required
                         />
                     </div>
@@ -82,8 +115,12 @@ export default function LoginPage() {
                     </div>
 
                     <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center', marginTop: '16px' }} disabled={loading}>
-                        {loading ? 'Connexion…' : <>Se connecter <ArrowRight size={18} /></>}
+                        {loading ? 'Inscription…' : <>Créer mon compte <ArrowRight size={18} /></>}
                     </button>
+
+                    <p className="login-subtitle" style={{ marginTop: '12px' }}>
+                        Déjà un compte ? <Link to="/login" className="text-orange" style={{ fontWeight: 600 }}>Se connecter</Link>
+                    </p>
                 </form>
             </div>
         </div>

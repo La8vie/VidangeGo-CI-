@@ -1,0 +1,35 @@
+.tracking-map-page {
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 12px;
+    margin: 1rem 0;
+}
+
+.map-header {
+    margin-bottom: 1rem;
+}
+
+.map-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #1f2937;
+}
+
+.map-header p {
+    margin: 0.25rem 0 0 0;
+    color: #6b7280;
+}
+
+.map-container {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.location-info {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}

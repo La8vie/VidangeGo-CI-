@@ -1,11 +1,19 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Car, User } from 'lucide-react';
 import './Navbar.css';
 
 export default function Navbar({ isLoggedIn = false }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('lastBooking');
+        navigate('/login');
+    };
 
     return (
         <nav className="navbar">
@@ -22,6 +30,7 @@ export default function Navbar({ isLoggedIn = false }) {
                             <a href="#services">Services</a>
                             <a href="#how-it-works">Comment ça marche</a>
                             <a href="#pricing">Tarifs</a>
+                            <Link to="/register" className="btn btn-secondary btn-sm">Inscription</Link>
                             <Link to="/login" className="btn btn-primary btn-sm">Connexion</Link>
                         </>
                     ) : (
@@ -33,6 +42,7 @@ export default function Navbar({ isLoggedIn = false }) {
                             <div className="navbar-avatar">
                                 <User size={18} />
                             </div>
+                            <button type="button" className="btn btn-secondary btn-sm" onClick={handleLogout}>Déconnexion</button>
                         </>
                     )}
                 </div>

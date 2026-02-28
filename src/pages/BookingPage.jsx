@@ -20,38 +20,44 @@ export default function BookingPage() {
         time: '',
         oilBrand: '',
     });
-    const [vehicles, setVehicles] = useState([
-        { id: 'v1', brand: 'Toyota', model: 'Corolla', year: 2019, mileage: 45000, licensePlate: 'AB 1234 CI' },
-        { id: 'v2', brand: 'Hyundai', model: 'Tucson', year: 2021, mileage: 12000, licensePlate: 'CD 5678 CI' }
-    ]);
+    const [vehicles, setVehicles] = useState([]);
 
     const navigate = useNavigate();
 
-    // Calcul du prix dynamique basé sur la commune
-    const calculatePrice = (commune) => {
+    const user = (() => {
+        try {
+            return JSON.parse(localStorage.getItem('user') || 'null');
+        } catch {
+            return null;
+        }
+    })();
+
+    // Calcul du prix dynamique basé sur la commune + service
+    const calculatePrice = (commune, service) => {
         const specialZones = ['Grand Bassam', 'Koumassi', 'Port-Bouët', 'Marcory'];
         if (!commune) return 5000;
         const isSpecial = specialZones.some(zone =>
             commune.toLowerCase().includes(zone.toLowerCase())
         );
-        return isSpecial ? 10000 : 5000;
+        const base = isSpecial ? 10000 : 5000;
+        const premiumExtra = service === 'premium' ? 1500 : 0;
+        return base + premiumExtra;
     };
 
-    const currentPrice = calculatePrice(booking.commune);
+    const currentPrice = calculatePrice(booking.commune, booking.service);
 
     useEffect(() => {
         const loadVehicles = async () => {
             try {
-                // Pour la démo, on essaye de récupérer les véhicules du "user-id-demo"
-                const data = await vehicleService.getByOwner('user-id-demo');
-                if (data.length > 0) setVehicles(data);
+                if (!user?.id) return;
+                const data = await vehicleService.getByOwner(user.id);
+                setVehicles(data);
             } catch (err) {
                 console.error('Erreur chargement véhicules:', err);
-                // Utilisation des véhicules par défaut si l'API n'est pas dispo
             }
         };
         loadVehicles();
-    }, []);
+    }, [user?.id]);
 
     useEffect(() => {
         if (booking.vehicleId) {
@@ -84,7 +90,6 @@ export default function BookingPage() {
             try {
                 setLoading(true);
                 const missionData = {
-                    clientId: 'user-id-demo',
                     vehicleId: booking.vehicleId,
                     serviceType: booking.service.toUpperCase(),
                     date: booking.date,
@@ -95,6 +100,16 @@ export default function BookingPage() {
                 };
 
                 await missionService.create(missionData);
+                localStorage.setItem('lastBooking', JSON.stringify({
+                    service: booking.service,
+                    vehicleId: booking.vehicleId,
+                    commune: booking.commune,
+                    address: booking.address,
+                    date: booking.date,
+                    time: booking.time,
+                    oilBrand: booking.oilBrand,
+                    totalPrice: currentPrice
+                }));
                 navigate('/payment');
             } catch (err) {
                 alert(err.message);
@@ -149,7 +164,7 @@ export default function BookingPage() {
                                         <Info size={18} color="var(--blue-500)" />
                                         <span>Recommandation d'huile</span>
                                     </div>
-                                    <p>Pour votre véhicule ({vehicles.find(v => v.id === booking.vehicleId).mileage} km), nous conseillons une huile : <strong>{oilSuggestion?.type}</strong></p>
+                                    <p>Pour votre véhicule ({vehicles.find(v => v.id === booking.vehicleId)?.mileage} km), nous conseillons une huile : <strong>{oilSuggestion?.type}</strong></p>
                                     <div className="input-group" style={{ marginTop: '12px' }}>
                                         <label>Choisissez votre marque préférée</label>
                                         <select className="select" value={booking.oilBrand} onChange={e => setBooking({ ...booking, oilBrand: e.target.value })}>
