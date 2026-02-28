@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { createLocation, getLocationsByMission } from '../controllers/locationController.js';
-import { authenticateToken } from '../middleware/authMiddleware.js';
+import { verifyToken } from '../middleware/authMiddleware.js';
 import { validate } from '../middleware/validationMiddleware.js';
 import { z } from 'zod';
 
@@ -14,7 +14,7 @@ const locationCreateSchema = z.object({
     }),
 });
 
-router.post('/', authenticateToken, validate(locationCreateSchema), createLocation);
-router.get('/mission/:missionId', authenticateToken, getLocationsByMission);
+router.post('/', verifyToken, validate(locationCreateSchema), createLocation);
+router.get('/mission/:missionId', verifyToken, getLocationsByMission);
 
 export default router;

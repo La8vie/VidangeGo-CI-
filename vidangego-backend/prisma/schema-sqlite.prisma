@@ -97,11 +97,9 @@ model Location {
   lat       Float
   lng       Float
   timestamp DateTime @default(now())
-  userId    String?
 
   // Relations
   mission Mission @relation(fields: [missionId], references: [id], onDelete: Cascade)
-  user    User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@map("locations")
 }
