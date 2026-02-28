@@ -1,9 +1,40 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
     console.log('🌱 Début du seeding...');
+
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    const adminName = process.env.ADMIN_NAME;
+    const adminPhone = process.env.ADMIN_PHONE;
+
+    if (adminEmail && adminPassword && adminName) {
+        const hashedPassword = await bcrypt.hash(adminPassword, 10);
+
+        await prisma.user.upsert({
+            where: { email: adminEmail },
+            update: {
+                name: adminName,
+                phone: adminPhone,
+                role: 'ADMIN',
+                password: hashedPassword,
+            },
+            create: {
+                email: adminEmail,
+                password: hashedPassword,
+                name: adminName,
+                phone: adminPhone,
+                role: 'ADMIN',
+            }
+        });
+
+        console.log(`✅ Compte ADMIN prêt: ${adminEmail}`);
+    } else {
+        console.log('ℹ️  ADMIN_EMAIL/ADMIN_PASSWORD/ADMIN_NAME non fournis: aucun compte ADMIN seed.');
+    }
 
     // Nettoyage de l'inventaire existant pour le test
     // await prisma.inventoryItem.deleteMany();

@@ -33,13 +33,13 @@ export const authLoginSchema = z.object({
 
 export const missionCreateSchema = z.object({
     body: z.object({
-        clientId: z.string().uuid(),
         vehicleId: z.string().uuid(),
         serviceType: z.enum(['STANDARD', 'PREMIUM']),
         date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: 'Date invalide' }),
         time: z.string(),
         commune: z.string(),
         address: z.string(),
+        oilBrand: z.string().optional(),
     }),
 });
 
@@ -50,7 +50,6 @@ export const vehicleCreateSchema = z.object({
         year: stringOrNumber,
         mileage: stringOrNumber,
         licensePlate: z.string().min(1),
-        ownerId: z.string().uuid(),
     }),
 });
 

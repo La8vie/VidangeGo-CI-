@@ -1,9 +1,10 @@
 /**
  * Calcule le prix de la prestation en fonction de la commune.
  * @param {string} commune 
+ * @param {string} [serviceType]
  * @returns {number} Prix en FCFA
  */
-export const calculatePrice = (commune) => {
+export const calculatePrice = (commune, serviceType = 'STANDARD') => {
     const specialZones = ['Grand Bassam', 'Koumassi', 'Port-Bouët', 'Marcory'];
     const normalizedCommune = commune.trim();
 
@@ -12,7 +13,9 @@ export const calculatePrice = (commune) => {
         normalizedCommune.toLowerCase().includes(zone.toLowerCase())
     );
 
-    return isSpecial ? 10000 : 5000;
+    const base = isSpecial ? 10000 : 5000;
+    const premiumExtra = serviceType === 'PREMIUM' ? 1500 : 0;
+    return base + premiumExtra;
 };
 
 /**

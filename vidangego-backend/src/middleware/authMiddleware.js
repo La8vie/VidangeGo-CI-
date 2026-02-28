@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
 
 const getJwtSecret = () => {
-    if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
-        throw new Error('FATAL ERROR: JWT_SECRET is not defined in production.');
+    if (!process.env.JWT_SECRET) {
+        throw new Error('FATAL ERROR: JWT_SECRET is not defined.');
     }
-    return process.env.JWT_SECRET || 'vidangego_secret';
+    return process.env.JWT_SECRET;
 };
 
 export const verifyToken = (req, res, next) => {
@@ -12,11 +12,19 @@ export const verifyToken = (req, res, next) => {
     if (typeof bearerHeader !== 'undefined') {
         const bearer = bearerHeader.split(' ');
         const bearerToken = bearer[1];
+
+        if (bearer.length !== 2 || bearer[0] !== 'Bearer' || !bearerToken) {
+            return res.status(401).json({ error: 'Format de token invalide' });
+        }
+
         try {
             const decoded = jwt.verify(bearerToken, getJwtSecret());
             req.user = decoded;
             next();
         } catch (err) {
+            if (err?.message?.includes('JWT_SECRET')) {
+                return res.status(500).json({ error: 'Configuration serveur invalide (JWT_SECRET manquant)' });
+            }
             return res.status(401).json({ error: 'Token invalide ou expiré' });
         }
     } else {

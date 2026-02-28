@@ -10,8 +10,8 @@ import inventoryRoutes from './routes/inventoryRoutes.js';
 
 dotenv.config();
 
-if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
-    console.error('FATAL ERROR: JWT_SECRET est requis en production.');
+if (!process.env.JWT_SECRET) {
+    console.error('FATAL ERROR: JWT_SECRET est requis.');
     process.exit(1);
 }
 
