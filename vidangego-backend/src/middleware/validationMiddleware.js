@@ -50,6 +50,7 @@ export const vehicleCreateSchema = z.object({
         year: stringOrNumber,
         mileage: stringOrNumber,
         licensePlate: z.string().min(1),
+        motorisation: z.enum(['Essence', 'Diesel', 'Hybride']).optional(),
     }),
 });
 

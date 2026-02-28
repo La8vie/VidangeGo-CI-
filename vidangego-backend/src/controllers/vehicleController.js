@@ -2,7 +2,7 @@ import { prisma } from '../server.js';
 
 export const addVehicle = async (req, res) => {
     try {
-        const { brand, model, year, mileage, licensePlate } = req.body;
+        const { brand, model, year, mileage, licensePlate, motorisation } = req.body;
 
         if (!req.user?.id) {
             return res.status(401).json({ error: 'Utilisateur non authentifié' });
@@ -15,6 +15,7 @@ export const addVehicle = async (req, res) => {
                 year: parseInt(year),
                 mileage: parseInt(mileage),
                 licensePlate,
+                motorisation,
                 ownerId: req.user.id
             }
         });
