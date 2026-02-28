@@ -1,25 +1,148 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Car, Plus, X, Edit, Trash2 } from 'lucide-react';
+import { vehicleService } from '../services/api';
 import './VehiclesPage.css';
 
-const initialVehicles = [
-    { id: 1, brand: 'Toyota', model: 'Corolla', year: '2019', plate: 'AB 1234 CI', color: '#3B82F6' },
-    { id: 2, brand: 'Hyundai', model: 'Tucson', year: '2021', plate: 'CD 5678 CI', color: '#10B981' },
-];
-
-const carBrands = ['Toyota', 'Hyundai', 'Kia', 'Nissan', 'Peugeot', 'Renault', 'Mercedes', 'BMW', 'Honda', 'Suzuki'];
+// Liste prioritaire des marques/modèles courants en Côte d'Ivoire
+const ciMarketData = {
+  'Toyota': ['Yaris', 'Corolla', 'Hilux', 'Land Cruiser', 'RAV4', 'Camry', 'Prius'],
+  'Hyundai': ['i10', 'i20', 'Accent', 'Tucson', 'Santa Fe', 'Creta', 'Elantra'],
+  'Kia': ['Picanto', 'Rio', 'Sportage', 'Sorento', 'Cerato', 'Seltos'],
+  'Nissan': ['Almera', 'Qashqai', 'X-Trail', 'Micra', 'Sentra', 'Patrol'],
+  'Peugeot': ['208', '301', '2008', '3008', '508', 'Partner', 'Rifter'],
+  'Renault': ['Clio', 'Captur', 'Duster', 'Symbol', 'Kadjar', 'Lodgy', 'Dokker'],
+  'Suzuki': ['Swift', 'Baleno', 'Jimny', 'Vitara', 'SX4', 'Alto'],
+  'Dacia': ['Logan', 'Sandero', 'Duster', 'Lodgy'],
+  'Mitsubishi': ['ASX', 'Outlander', 'L200', 'Space Star', 'Eclipse Cross'],
+  'Ford': ['Fiesta', 'Focus', 'EcoSport', 'Ranger', 'Mustang', 'Kuga'],
+  'Volkswagen': ['Polo', 'Golf', 'Tiguan', 'Passat', 'T-Cross', 'T-Roc'],
+  'Mercedes': ['Classe A', 'Classe C', 'Classe E', 'GLA', 'GLC', 'GLC', 'Vito'],
+  'BMW': ['Série 1', 'Série 3', 'Série 5', 'X1', 'X3', 'X5'],
+  'Audi': ['A1', 'A3', 'A4', 'Q2', 'Q3', 'Q5', 'Q7'],
+  'Honda': ['Jazz', 'Civic', 'HR-V', 'CR-V', 'Accord', 'Fit'],
+  'Mazda': ['Mazda2', 'Mazda3', 'CX-3', 'CX-5', 'CX-30', 'BT-50'],
+  'Chevrolet': ['Spark', 'Aveo', 'Cruze', 'Tracker', 'Captiva'],
+  'Opel': ['Corsa', 'Astra', 'Crossland X', 'Grandland X', 'Mokka X'],
+  'Fiat': ['500', 'Panda', 'Tipo', '500X', 'Doblo', 'Palio'],
+  'SsangYong': ['Tivoli', 'Korando', 'Rexton', 'Musso'],
+  'Chery': ['Tiggo', 'Arrizo', 'QQ', 'Jago'],
+  'Geely': ['Emgrand', 'Coolray', 'Azkarra', 'Tugella'],
+};
 
 export default function VehiclesPage() {
-    const [vehicles, setVehicles] = useState(initialVehicles);
+    const [vehicles, setVehicles] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [form, setForm] = useState({ brand: '', model: '', year: '', plate: '' });
+    const [form, setForm] = useState({ brand: '', model: '', year: '', mileage: '', plate: '', motorisation: '' });
+    const [modelSuggestions, setModelSuggestions] = useState([]);
+    const [modelsCache, setModelsCache] = useState({});
+    const [allBrands, setAllBrands] = useState([]);
+    const [ciBrands] = useState(Object.keys(ciMarketData));
+
+    const user = (() => {
+        try {
+            return JSON.parse(localStorage.getItem('user') || 'null');
+        } catch {
+            return null;
+        }
+    })();
+
+    useEffect(() => {
+        const load = async () => {
+            try {
+                if (!user?.id) return;
+                const data = await vehicleService.getByOwner(user.id);
+                setVehicles(data);
+            } catch (err) {
+                console.error('Erreur chargement véhicules:', err);
+            }
+        };
+        load();
+    }, [user?.id]);
+
+    // Charger toutes les marques VPIC au montage (fallback)
+    useEffect(() => {
+        const fetchAllBrands = async () => {
+            try {
+                const url = 'https://vpic.nhtsa.dot.gov/api/vehicles/getallmakes?format=json';
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('Erreur récupération marques');
+                const json = await res.json();
+                const brands = Array.isArray(json?.Results)
+                    ? json.Results.map(r => r?.Make_Name).filter(Boolean).sort()
+                    : [];
+                setAllBrands(brands);
+            } catch (err) {
+                console.error('Erreur récupération marques:', err);
+                setAllBrands([]);
+            }
+        };
+        fetchAllBrands();
+    }, []);
+
+    useEffect(() => {
+        const brand = (form.brand || '').trim();
+        if (brand.length < 2) {
+            setModelSuggestions([]);
+            return;
+        }
+
+        // Priorité : marché CI > VPIC
+        if (ciMarketData[brand]) {
+            setModelSuggestions(ciMarketData[brand]);
+            return;
+        }
+
+        const normalized = brand.toLowerCase();
+        if (modelsCache[normalized]) {
+            setModelSuggestions(modelsCache[normalized]);
+            return;
+        }
+
+        const timeoutId = setTimeout(() => {
+            const fetchModels = async () => {
+                try {
+                    const url = `https://vpic.nhtsa.dot.gov/api/vehicles/getmodelsformake/${encodeURIComponent(brand)}?format=json`;
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error('Erreur récupération modèles');
+                    const json = await res.json();
+                    const models = Array.isArray(json?.Results)
+                        ? Array.from(new Set(json.Results.map(r => r?.Model_Name).filter(Boolean))).sort()
+                        : [];
+
+                    setModelsCache((prev) => ({ ...prev, [normalized]: models }));
+                    setModelSuggestions(models);
+                } catch (err) {
+                    console.error('Erreur récupération modèles:', err);
+                    setModelSuggestions([]);
+                }
+            };
+            fetchModels();
+        }, 350);
+
+        return () => clearTimeout(timeoutId);
+    }, [form.brand, modelsCache]);
 
     const handleAdd = (e) => {
         e.preventDefault();
-        const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
-        setVehicles([...vehicles, { ...form, id: Date.now(), color: colors[Math.floor(Math.random() * colors.length)] }]);
-        setForm({ brand: '', model: '', year: '', plate: '' });
-        setShowModal(false);
+        const create = async () => {
+            try {
+                const vehicleData = {
+                    brand: form.brand,
+                    model: form.model,
+                    year: form.year,
+                    mileage: form.mileage,
+                    licensePlate: form.plate,
+                    motorisation: form.motorisation,
+                };
+                const created = await vehicleService.addVehicle(vehicleData);
+                setVehicles((prev) => [created, ...prev]);
+                setForm({ brand: '', model: '', year: '', mileage: '', plate: '', motorisation: '' });
+                setShowModal(false);
+            } catch (err) {
+                alert(err?.message || 'Erreur lors de la création du véhicule');
+            }
+        };
+        create();
     };
 
     const handleDelete = (id) => {
@@ -42,13 +165,13 @@ export default function VehiclesPage() {
                 <div className="vehicles-grid animate-fade-up stagger-1">
                     {vehicles.map(v => (
                         <div key={v.id} className="card vehicle-card">
-                            <div className="vehicle-card-header" style={{ background: `${v.color}15` }}>
-                                <Car size={40} color={v.color} />
+                            <div className="vehicle-card-header" style={{ background: `#3B82F615` }}>
+                                <Car size={40} color="#3B82F6" />
                             </div>
                             <div className="vehicle-card-body">
                                 <h3>{v.brand} {v.model}</h3>
                                 <span className="text-gray">{v.year}</span>
-                                <div className="vehicle-plate">{v.plate}</div>
+                                <div className="vehicle-plate">{v.licensePlate}</div>
                             </div>
                             <div className="vehicle-card-actions">
                                 <button className="icon-btn"><Edit size={16} /></button>
@@ -73,14 +196,31 @@ export default function VehiclesPage() {
                             <form onSubmit={handleAdd}>
                                 <div className="input-group">
                                     <label>Marque</label>
-                                    <select className="select" value={form.brand} onChange={e => setForm({ ...form, brand: e.target.value })} required>
-                                        <option value="">Sélectionner…</option>
-                                        {carBrands.map(b => <option key={b}>{b}</option>)}
-                                    </select>
+                                    <input
+                                        className="input"
+                                        list="brand-suggestions"
+                                        placeholder="Ex: Toyota"
+                                        value={form.brand}
+                                        onChange={e => setForm({ ...form, brand: e.target.value })}
+                                        required
+                                    />
+                                    <datalist id="brand-suggestions">
+                                        {[...ciBrands, ...allBrands].map(b => <option key={b} value={b} />)}
+                                    </datalist>
                                 </div>
                                 <div className="input-group">
                                     <label>Modèle</label>
-                                    <input className="input" placeholder="Ex: Corolla" value={form.model} onChange={e => setForm({ ...form, model: e.target.value })} required />
+                                    <input
+                                        className="input"
+                                        list="model-suggestions"
+                                        placeholder="Ex: Corolla"
+                                        value={form.model}
+                                        onChange={e => setForm({ ...form, model: e.target.value })}
+                                        required
+                                    />
+                                    <datalist id="model-suggestions">
+                                        {modelSuggestions.slice(0, 100).map(m => <option key={m} value={m} />)}
+                                    </datalist>
                                 </div>
                                 <div className="modal-row">
                                     <div className="input-group">
@@ -91,6 +231,19 @@ export default function VehiclesPage() {
                                         <label>Plaque</label>
                                         <input className="input" placeholder="XX 0000 CI" value={form.plate} onChange={e => setForm({ ...form, plate: e.target.value })} required />
                                     </div>
+                                </div>
+                                <div className="input-group" style={{ marginTop: '12px' }}>
+                                    <label>Kilométrage</label>
+                                    <input className="input" placeholder="45000" value={form.mileage} onChange={e => setForm({ ...form, mileage: e.target.value })} required />
+                                </div>
+                                <div className="input-group" style={{ marginTop: '12px' }}>
+                                    <label>Motorisation</label>
+                                    <select className="input" value={form.motorisation} onChange={e => setForm({ ...form, motorisation: e.target.value })} required>
+                                        <option value="">Sélectionner...</option>
+                                        <option value="Essence">Essence</option>
+                                        <option value="Diesel">Diesel</option>
+                                        <option value="Hybride">Hybride</option>
+                                    </select>
                                 </div>
                                 <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '16px' }}>
                                     Enregistrer le véhicule
