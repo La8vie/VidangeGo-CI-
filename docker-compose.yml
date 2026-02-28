@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: vidangego_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: vidangego_root_2026
+      MYSQL_DATABASE: vidangego
+      MYSQL_USER: vidangego_user
+      MYSQL_PASSWORD: vidangego_pass_2026
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./vidangego-backend/prisma/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - vidangego_network
+
+  # Backend API
+  backend:
+    build:
+      context: ./vidangego-backend
+      dockerfile: Dockerfile
+    container_name: vidangego_backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DATABASE_URL: mysql://vidangego_user:vidangego_pass_2026@db:3306/vidangego
+      JWT_SECRET: vidangego_jwt_secret_2026_production
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    networks:
+      - vidangego_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Client Application
+  client:
+    build:
+      context: ./vidangego-client
+      dockerfile: Dockerfile
+    container_name: vidangego_client
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - vidangego_network
+
+  # Admin Application
+  admin:
+    build:
+      context: ./vidangego-admin
+      dockerfile: Dockerfile
+    container_name: vidangego_admin
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - vidangego_network
+
+volumes:
+  mysql_data:
+
+networks:
+  vidangego_network:
+    driver: bridge

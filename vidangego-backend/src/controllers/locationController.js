@@ -17,13 +17,16 @@ export const createLocation = async (req, res) => {
             data: { missionId, lat: parseFloat(lat), lng: parseFloat(lng) }
         });
 
-        // Émettre la position via WebSocket (sera géré dans server.js)
-        req.app.get('io').to(`mission_${missionId}`).emit('location_update', {
-            missionId,
-            lat: location.lat,
-            lng: location.lng,
-            timestamp: location.timestamp
-        });
+        // Émettre la position via WebSocket (si disponible)
+        const io = req.app.get('io');
+        if (io) {
+            io.to(`mission_${missionId}`).emit('location_update', {
+                missionId,
+                lat: location.lat,
+                lng: location.lng,
+                timestamp: location.timestamp
+            });
+        }
 
         res.status(201).json(location);
     } catch (error) {
