@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://vidangego-api.vercel.app/api/$1"
+      "destination": "https://vidangego-backend-cshfk2wlu-lavie8s-projects.vercel.app/api/$1"
     },
     {
       "source": "/socket.io/(.*)",
-      "destination": "https://vidangego-api.vercel.app/socket.io/$1"
+      "destination": "https://vidangego-backend-cshfk2wlu-lavie8s-projects.vercel.app/socket.io/$1"
     },
     {
       "source": "/(.*)",
@@ -14,6 +14,16 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "https://vidangego-api.vercel.app"
-  }
+    "VITE_API_URL": "https://vidangego-backend-cshfk2wlu-lavie8s-projects.vercel.app",
+    "VITE_PUSHER_KEY": "votre_pusher_key",
+    "VITE_PUSHER_CLUSTER": "eu",
+    "VITE_SUPABASE_URL": "votre_url_supabase",
+    "VITE_SUPABASE_ANON_KEY": "votre_cle_supabase",
+    "VITE_SENTRY_DSN": "votre_dsn_sentry"
+  },
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install --legacy-peer-deps",
+  "framework": "vite",
+  "devCommand": "npm run dev"
 }

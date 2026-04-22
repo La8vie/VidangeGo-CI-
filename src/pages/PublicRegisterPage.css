@@ -1,0 +1,783 @@
+/* Styles pour la page d'inscription publique VidangeGo CI */
+
+.public-register-page {
+    min-height: 100vh;
+    display: flex;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Section gauche - Présentation */
+.register-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.register-left::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/assets/pattern.svg') repeat;
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.register-left-content {
+    position: relative;
+    z-index: 2;
+    max-width: 500px;
+    text-align: center;
+}
+
+.register-logo-container {
+    margin-bottom: 2rem;
+}
+
+.register-logo {
+    height: 60px;
+    width: auto;
+    filter: brightness(0) invert(1);
+}
+
+.register-left h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.register-left p {
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+.register-features {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.register-feature {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-align: left;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.register-feature:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.register-feature div {
+    flex: 1;
+}
+
+.register-feature strong {
+    display: block;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.register-feature span {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* Section droite - Formulaire */
+.register-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: white;
+}
+
+.register-form-container {
+    width: 100%;
+    max-width: 600px;
+}
+
+.register-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.register-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: #333;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.brand-logo {
+    height: 40px;
+    width: auto;
+}
+
+.brand-ci {
+    color: #667eea;
+}
+
+.register-progress {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.progress-step {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.progress-step.active {
+    background: #667eea;
+    color: white;
+}
+
+.progress-step.completed {
+    background: #10b981;
+    color: white;
+}
+
+.progress-line {
+    flex: 1;
+    height: 2px;
+    background: #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.progress-line.active {
+    background: #667eea;
+}
+
+.register-title-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.register-title-section h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.register-subtitle {
+    color: #6b7280;
+    font-size: 1rem;
+}
+
+/* Formulaire */
+.register-form {
+    width: 100%;
+}
+
+.form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.input {
+    padding: 0.875rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.input::placeholder {
+    color: #9ca3af;
+}
+
+/* Password strength */
+.password-input-container {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+    color: #667eea;
+}
+
+.password-strength {
+    margin-top: 0.5rem;
+}
+
+.strength-bar {
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+}
+
+.strength-fill {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.strength-fill.red { background: #ef4444; }
+.strength-fill.orange { background: #f97316; }
+.strength-fill.yellow { background: #eab308; }
+.strength-fill.green { background: #10b981; }
+
+.strength-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.strength-text.red { color: #ef4444; }
+.strength-text.orange { color: #f97316; }
+.strength-text.yellow { color: #eab308; }
+.strength-text.green { color: #10b981; }
+
+/* Vehicle types */
+.vehicle-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.vehicle-type {
+    cursor: pointer;
+    position: relative;
+}
+
+.vehicle-type input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.vehicle-type-content {
+    padding: 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.vehicle-type input[type="radio"]:checked + .vehicle-type-content {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.vehicle-type-content:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+}
+
+.vehicle-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.vehicle-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+/* Checkboxes */
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+.checkbox-text {
+    color: #374151;
+}
+
+.checkbox-text a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.checkbox-text a:hover {
+    text-decoration: underline;
+}
+
+/* Messages */
+.error-message, .success-message {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.error-message {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.success-message {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+}
+
+/* Actions */
+.register-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.register-actions .btn {
+    flex: 1;
+    padding: 0.875rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5a67d8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-outline {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.btn-outline:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.loading-spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Footer */
+.register-footer {
+    text-align: center;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.register-footer .register-subtitle {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.register-footer .register-subtitle a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.register-footer .register-subtitle a:hover {
+    text-decoration: underline;
+}
+
+/* Verification section */
+.verification-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.verification-input {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.5rem;
+    padding: 1rem;
+}
+
+.verification-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.verified-success {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #f0fdf4;
+    color: #16a34a;
+    border-radius: 0.75rem;
+    font-weight: 600;
+}
+
+/* Success page */
+.register-success {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+}
+
+.success-container {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 3rem;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: #10b981;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    font-size: 2rem;
+}
+
+.success-container h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+.success-container p {
+    color: #6b7280;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.success-info {
+    background: #f9fafb;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    color: #374151;
+    font-weight: 500;
+}
+
+.info-item:not(:last-child) {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.success-actions {
+    margin-bottom: 2rem;
+}
+
+.success-actions .btn {
+    width: 100%;
+    padding: 1rem 2rem;
+}
+
+.success-next-steps {
+    text-align: left;
+}
+
+.success-next-steps h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+.success-next-steps ul {
+    list-style: none;
+    padding: 0;
+}
+
+.success-next-steps li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    color: #6b7280;
+}
+
+.success-next-steps li::before {
+    content: 'check';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: #10b981;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .public-register-page {
+        flex-direction: column;
+    }
+
+    .register-left {
+        padding: 3rem 2rem;
+        min-height: auto;
+    }
+
+    .register-left h2 {
+        font-size: 2rem;
+    }
+
+    .register-features {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .vehicle-types {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .register-left,
+    .register-right {
+        padding: 2rem 1rem;
+    }
+
+    .register-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .register-progress {
+        justify-content: center;
+    }
+
+    .register-title-section h1 {
+        font-size: 1.5rem;
+    }
+
+    .vehicle-types {
+        grid-template-columns: 1fr;
+    }
+
+    .register-actions,
+    .verification-actions {
+        flex-direction: column;
+    }
+
+    .success-container {
+        padding: 2rem;
+        margin: 1rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.register-form {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.register-feature {
+    animation: fadeIn 0.6s ease-out;
+    animation-fill-mode: both;
+}
+
+.register-feature:nth-child(1) { animation-delay: 0.1s; }
+.register-feature:nth-child(2) { animation-delay: 0.2s; }
+.register-feature:nth-child(3) { animation-delay: 0.3s; }
+.register-feature:nth-child(4) { animation-delay: 0.4s; }
+
+/* Focus styles for accessibility */
+.btn:focus,
+.input:focus,
+.vehicle-type input[type="radio"]:focus + .vehicle-type-content {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .register-form {
+        border: 2px solid #000;
+    }
+    
+    .input {
+        border-color: #000;
+    }
+    
+    .btn-primary {
+        border: 2px solid #000;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .register-feature,
+    .register-form,
+    .btn,
+    .input,
+    .vehicle-type-content {
+        animation: none;
+        transition: none;
+    }
+}
