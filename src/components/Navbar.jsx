@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Car, User } from 'lucide-react';
+import { Menu, X, Car, User, ArrowLeft } from 'lucide-react';
 import './Navbar.css';
 
 export default function Navbar({ isLoggedIn = false }) {
@@ -15,6 +15,10 @@ export default function Navbar({ isLoggedIn = false }) {
         navigate('/login');
     };
 
+    const handleBack = () => {
+        navigate(-1);
+    };
+
     return (
         <nav className="navbar">
             <div className="container navbar-inner">
@@ -25,6 +29,12 @@ export default function Navbar({ isLoggedIn = false }) {
                 </Link>
 
                 <div className={`navbar-links ${menuOpen ? 'open' : ''}`}>
+                    {isLoggedIn && (
+                        <button type="button" className="btn btn-ghost btn-sm back-btn" onClick={handleBack}>
+                            <ArrowLeft size={18} />
+                            Retour
+                        </button>
+                    )}
                     {!isLoggedIn ? (
                         <>
                             <a href="#services">Services</a>

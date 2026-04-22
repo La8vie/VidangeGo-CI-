@@ -1,0 +1,24 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="60" cy="60" r="55" fill="#FF6B35" stroke="#FFFFFF" stroke-width="2"/>
+  
+  <!-- Car body -->
+  <rect x="25" y="45" width="70" height="25" rx="8" fill="#FFFFFF"/>
+  
+  <!-- Car roof -->
+  <path d="M35 45 L45 35 L75 35 L85 45" fill="#FFFFFF"/>
+  
+  <!-- Windows -->
+  <rect x="48" y="38" width="12" height="7" rx="2" fill="#FF6B35"/>
+  <rect x="62" y="38" width="12" height="7" rx="2" fill="#FF6B35"/>
+  
+  <!-- Wheels -->
+  <circle cx="40" cy="72" r="5" fill="#333333"/>
+  <circle cx="80" cy="72" r="5" fill="#333333"/>
+  
+  <!-- Oil drop icon -->
+  <path d="M95 40 C95 35, 92 32, 88 32 C84 32, 81 35, 81 40 C81 42, 82 44, 84 44 L92 44 C94 44, 95 42, 95 40 Z" fill="#FFFFFF" opacity="0.9"/>
+  
+  <!-- Text "VG" -->
+  <text x="60" y="90" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#FFFFFF">VG</text>
+</svg>

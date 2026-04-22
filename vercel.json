@@ -1,8 +1,19 @@
 {
-    "rewrites": [
-        {
-            "source": "/(.*)",
-            "destination": "/index.html"
-        }
-    ]
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://vidangego-api.vercel.app/api/$1"
+    },
+    {
+      "source": "/socket.io/(.*)",
+      "destination": "https://vidangego-api.vercel.app/socket.io/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "env": {
+    "VITE_API_URL": "https://vidangego-api.vercel.app"
+  }
 }

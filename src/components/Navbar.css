@@ -85,6 +85,26 @@
     background: var(--orange-200);
 }
 
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--gray-600);
+    background: transparent;
+    border: 1px solid var(--gray-200);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+    transition: all var(--transition-fast);
+    margin-right: auto;
+}
+
+.back-btn:hover {
+    background: var(--gray-100);
+    color: var(--gray-800);
+    border-color: var(--gray-300);
+}
+
 .navbar-toggle {
     display: none;
     background: none;

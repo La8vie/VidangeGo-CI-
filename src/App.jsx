@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import DashboardPage from './pages/DashboardPage';
 import BookingPage from './pages/BookingPage';
 import VehiclesPage from './pages/VehiclesPage';
@@ -37,6 +38,7 @@ function App() {
           <Route path="/" element={<><Navbar isLoggedIn={Boolean(localStorage.getItem('token'))} /><LandingPage /></>} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/dashboard" element={<Protected><><Navbar isLoggedIn={Boolean(localStorage.getItem('token'))} /><DashboardPage /></></Protected>} />
           <Route path="/vehicles" element={<Protected><><Navbar isLoggedIn={Boolean(localStorage.getItem('token'))} /><VehiclesPage /></></Protected>} />
           <Route path="/booking" element={<Protected><><Navbar isLoggedIn={Boolean(localStorage.getItem('token'))} /><BookingPage /></></Protected>} />

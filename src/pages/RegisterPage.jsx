@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Car } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { authService } from '../services/api';
 import './LoginPage.css';
 
@@ -12,8 +12,13 @@ export default function RegisterPage() {
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
+
+    const handleBack = () => {
+        navigate(-1);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -41,87 +46,156 @@ export default function RegisterPage() {
         <div className="login-page">
             <div className="login-left">
                 <div className="login-left-content">
-                    <Car size={48} color="white" />
+                    <div className="login-logo-container">
+                        <img src="/assets/vidangego-logo.svg" alt="VidangeGo CI Logo" className="login-logo" />
+                    </div>
                     <h2>Créer votre compte VidangeGo CI</h2>
-                    <p>Inscrivez-vous pour réserver une vidange à domicile.</p>
+                    <p>Rejoignez-nous pour une vidange à domicile simplifiée.</p>
                     <div className="login-features">
-                        <div className="login-feature">✓ Service en 30 minutes</div>
-                        <div className="login-feature">✓ Paiement Mobile Money</div>
-                        <div className="login-feature">✓ Mécaniciens certifiés</div>
-                        <div className="login-feature">✓ Garantie 30 jours</div>
+                        <div className="login-feature">
+                            <div className="feature-icon">🚗</div>
+                            <div>
+                                <strong>Service rapide</strong>
+                                <span>Vidange en 30 minutes</span>
+                            </div>
+                        </div>
+                        <div className="login-feature">
+                            <div className="feature-icon">💳</div>
+                            <div>
+                                <strong>Paiement facile</strong>
+                                <span>Mobile Money disponible</span>
+                            </div>
+                        </div>
+                        <div className="login-feature">
+                            <div className="feature-icon">🔧</div>
+                            <div>
+                                <strong>Experts certifiés</strong>
+                                <span>Mécaniciens professionnels</span>
+                            </div>
+                        </div>
+                        <div className="login-feature">
+                            <div className="feature-icon">🛡️</div>
+                            <div>
+                                <strong>Garantie totale</strong>
+                                <span>30 jours de garantie</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div className="login-right">
-                <form className="login-form" onSubmit={handleSubmit}>
-                    <Link to="/" className="login-brand">
-                        <Car size={24} color="var(--orange-500)" />
-                        <span>VidangeGo <span className="brand-ci">CI</span></span>
-                    </Link>
+                <div className="login-form-container">
+                    <form className="login-form" onSubmit={handleSubmit}>
+                        <div className="login-header">
+                            <Link to="/" className="login-brand">
+                                <img src="/assets/vidangego-logo.svg" alt="VidangeGo CI" className="brand-logo" />
+                                <span>VidangeGo <span className="brand-ci">CI</span></span>
+                            </Link>
+                            <button type="button" className="btn btn-ghost btn-sm back-btn" onClick={handleBack}>
+                                <ArrowLeft size={16} />
+                                Retour
+                            </button>
+                        </div>
 
-                    <h1>Inscription</h1>
+                        <div className="login-title-section">
+                            <h1>Inscription</h1>
+                            <p className="login-subtitle">Créez votre compte professionnel</p>
+                        </div>
 
-                    {error && (
-                        <p className="login-subtitle" style={{ color: 'var(--danger, #E53E3E)' }}>{error}</p>
-                    )}
+                        {error && (
+                            <div className="error-message">
+                                <span>⚠️ {error}</span>
+                            </div>
+                        )}
 
-                    <div className="input-group" style={{ marginTop: '12px' }}>
-                        <label>Nom</label>
-                        <input
-                            type="text"
-                            className="input"
-                            placeholder="Votre nom"
-                            value={name}
-                            onChange={e => setName(e.target.value)}
-                            autoFocus
-                            required
-                        />
-                    </div>
+                        <div className="form-fields">
+                            <div className="input-group">
+                                <label htmlFor="name">Nom complet</label>
+                                <input
+                                    id="name"
+                                    type="text"
+                                    className="input"
+                                    placeholder="Votre nom et prénom"
+                                    value={name}
+                                    onChange={e => setName(e.target.value)}
+                                    autoFocus
+                                    required
+                                />
+                            </div>
 
-                    <div className="input-group" style={{ marginTop: '12px' }}>
-                        <label>Téléphone (optionnel)</label>
-                        <input
-                            type="tel"
-                            className="input"
-                            placeholder="Ex: 0102030405"
-                            value={phone}
-                            onChange={e => setPhone(e.target.value)}
-                        />
-                    </div>
+                            <div className="input-group">
+                                <label htmlFor="phone">Téléphone (optionnel)</label>
+                                <input
+                                    id="phone"
+                                    type="tel"
+                                    className="input"
+                                    placeholder="+225 00 00 00 00"
+                                    value={phone}
+                                    onChange={e => setPhone(e.target.value)}
+                                />
+                            </div>
 
-                    <div className="input-group" style={{ marginTop: '12px' }}>
-                        <label>Email</label>
-                        <input
-                            type="email"
-                            className="input"
-                            placeholder="ex: nom@email.com"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
+                            <div className="input-group">
+                                <label htmlFor="email">Email professionnel</label>
+                                <input
+                                    id="email"
+                                    type="email"
+                                    className="input"
+                                    placeholder="exemple@email.com"
+                                    value={email}
+                                    onChange={e => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
 
-                    <div className="input-group" style={{ marginTop: '12px' }}>
-                        <label>Mot de passe</label>
-                        <input
-                            type="password"
-                            className="input"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
+                            <div className="input-group">
+                                <label htmlFor="password">Mot de passe</label>
+                                <div className="password-input-container">
+                                    <input
+                                        id="password"
+                                        type={showPassword ? "text" : "password"}
+                                        className="input"
+                                        placeholder="•••••••"
+                                        value={password}
+                                        onChange={e => setPassword(e.target.value)}
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        className="password-toggle"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                                    >
+                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
-                    <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center', marginTop: '16px' }} disabled={loading}>
-                        {loading ? 'Inscription…' : <>Créer mon compte <ArrowRight size={18} /></>}
-                    </button>
+                        <div className="login-actions">
+                            <button type="submit" className="btn btn-primary btn-lg btn-full" disabled={loading}>
+                                {loading ? (
+                                    <span className="loading-spinner">Inscription en cours...</span>
+                                ) : (
+                                    <>
+                                        Créer mon compte
+                                        <ArrowRight size={18} />
+                                    </>
+                                )}
+                            </button>
+                        </div>
 
-                    <p className="login-subtitle" style={{ marginTop: '12px' }}>
-                        Déjà un compte ? <Link to="/login" className="text-orange" style={{ fontWeight: 600 }}>Se connecter</Link>
-                    </p>
-                </form>
+                        <div className="login-footer">
+                            <p className="login-subtitle">
+                                Déjà un compte ? 
+                                <Link to="/login" className="text-orange">
+                                    Se connecter
+                                </Link>
+                            </p>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );
