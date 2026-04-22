@@ -1,0 +1,312 @@
+name: Deploy VidangeGo CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '18'
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  # Tests et validation
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test_password
+          MYSQL_DATABASE: vidangego_test
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: test_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Cache dependencies (backend)
+      uses: actions/cache@v3
+      with:
+        path: vidangego-backend/node_modules
+        key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-backend-${{ hashFiles('vidangego-backend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-${{ env.NODE_VERSION }}-backend-
+
+    - name: Install dependencies (backend)
+      run: |
+        cd vidangego-backend
+        npm ci
+
+    - name: Cache dependencies (client)
+      uses: actions/cache@v3
+      with:
+        path: vidangego-client/node_modules
+        key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-client-${{ hashFiles('vidangego-client/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-${{ env.NODE_VERSION }}-client-
+
+    - name: Install dependencies (client)
+      run: |
+        cd vidangego-client
+        npm ci
+
+    - name: Cache dependencies (admin)
+      uses: actions/cache@v3
+      with:
+        path: vidangego-admin/node_modules
+        key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-admin-${{ hashFiles('vidangego-admin/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-${{ env.NODE_VERSION }}-admin-
+
+    - name: Install dependencies (admin)
+      run: |
+        cd vidangego-admin
+        npm ci
+
+    - name: Run linting (backend)
+      run: |
+        cd vidangego-backend
+        npm run lint
+
+    - name: Run linting (client)
+      run: |
+        cd vidangego-client
+        npm run lint
+
+    - name: Run linting (admin)
+      run: |
+        cd vidangego-admin
+        npm run lint
+
+    - name: Run unit tests (backend)
+      run: |
+        cd vidangego-backend
+        npm run test:unit
+      env:
+        DATABASE_URL: mysql://test_user:test_password@localhost:3306/vidangego_test
+
+    - name: Run integration tests (backend)
+      run: |
+        cd vidangego-backend
+        npm run test:integration
+      env:
+        DATABASE_URL: mysql://test_user:test_password@localhost:3306/vidangego_test
+
+    - name: Run E2E tests (client)
+      run: |
+        cd vidangego-client
+        npm run test:e2e
+      env:
+        CYPRESS_baseUrl: http://localhost:3000
+
+    - name: Security audit
+      run: |
+        cd vidangego-backend && npm audit --audit-level high
+        cd ../vidangego-client && npm audit --audit-level high
+        cd ../vidangego-admin && npm audit --audit-level high
+
+  # Déploiement staging
+  deploy-staging:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Cache dependencies (backend)
+      uses: actions/cache@v3
+      with:
+        path: vidangego-backend/node_modules
+        key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-backend-${{ hashFiles('vidangego-backend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-${{ env.NODE_VERSION }}-backend-
+
+    - name: Install dependencies (backend)
+      run: |
+        cd vidangego-backend
+        npm ci
+
+    - name: Cache dependencies (client)
+      uses: actions/cache@v3
+      with:
+        path: vidangego-client/node_modules
+        key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-client-${{ hashFiles('vidangego-client/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-${{ env.NODE_VERSION }}-client-
+
+    - name: Install dependencies (client)
+      run: |
+        cd vidangego-client
+        npm ci
+
+    - name: Cache dependencies (admin)
+      uses: actions/cache@v3
+      with:
+        path: vidangego-admin/node_modules
+        key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-admin-${{ hashFiles('vidangego-admin/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-${{ env.NODE_VERSION }}-admin-
+
+    - name: Install dependencies (admin)
+      run: |
+        cd vidangego-admin
+        npm ci
+
+    - name: Install Vercel CLI
+      run: npm install --global vercel@latest
+
+    - name: Pull Vercel Environment Information
+      run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+    - name: Build project
+      run: |
+        # Build backend
+        cd vidangego-backend
+        npm run build
+        
+        # Build client
+        cd ../vidangego-client
+        npm run build
+        
+        # Build admin
+        cd ../vidangego-admin
+        npm run build
+
+    - name: Deploy to Vercel Staging
+      run: |
+        # Deploy client
+        cd vidangego-client
+        vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+        
+        # Deploy admin
+        cd ../vidangego-admin
+        vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+    - name: Run smoke tests
+      run: |
+        echo "Running smoke tests on staging..."
+        # Test client health
+        curl -f https://vidangego-client-git-main-${{ github.repository_owner }}.vercel.app/api/health || exit 1
+        
+        # Test admin health
+        curl -f https://vidangego-admin-git-main-${{ github.repository_owner }}.vercel.app/api/health || exit 1
+
+  # Déploiement production
+  deploy-production:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Cache dependencies (backend)
+      uses: actions/cache@v3
+      with:
+        path: vidangego-backend/node_modules
+        key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-backend-${{ hashFiles('vidangego-backend/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-${{ env.NODE_VERSION }}-backend-
+
+    - name: Install dependencies (backend)
+      run: |
+        cd vidangego-backend
+        npm ci
+
+    - name: Cache dependencies (client)
+      uses: actions/cache@v3
+      with:
+        path: vidangego-client/node_modules
+        key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-client-${{ hashFiles('vidangego-client/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-${{ env.NODE_VERSION }}-client-
+
+    - name: Install dependencies (client)
+      run: |
+        cd vidangego-client
+        npm ci
+
+    - name: Cache dependencies (admin)
+      uses: actions/cache@v3
+      with:
+        path: vidangego-admin/node_modules
+        key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-admin-${{ hashFiles('vidangego-admin/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-${{ env.NODE_VERSION }}-admin-
+
+    - name: Install dependencies (admin)
+      run: |
+        cd vidangego-admin
+        npm ci
+
+    - name: Install Vercel CLI
+      run: npm install --global vercel@latest
+
+    - name: Deploy to Vercel Production
+      run: |
+        # Deploy client
+        cd vidangego-client
+        vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+        
+        # Deploy admin
+        cd ../vidangego-admin
+        vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+    - name: Run production smoke tests
+      run: |
+        echo "Running smoke tests on production..."
+        # Test client health
+        curl -f https://vidangego-client.vercel.app/api/health || exit 1
+        
+        # Test admin health
+        curl -f https://vidangego-admin.vercel.app/api/health || exit 1
+
+    - name: Notify Slack
+      if: success()
+      run: |
+        curl -X POST -H 'Content-type: application/json' \
+        --data '{"text":"VidangeGo CI deployed successfully to production! \nClient: https://vidangego-client.vercel.app \nAdmin: https://vidangego-admin.vercel.app"}' \
+        ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Nettoyage
+  cleanup:
+    needs: [deploy-staging, deploy-production]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Cleanup Vercel deployments
+      run: |
+        echo "Cleaning up old deployments..."
+        # Ajouter la logique de nettoyage si nécessaire
