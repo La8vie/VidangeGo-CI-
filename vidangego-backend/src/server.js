@@ -5,6 +5,8 @@ import { PrismaClient } from '@prisma/client';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 
+import totpRoutes from './routes/totpRoutes.js';
+
 dotenv.config();
 
 if (!process.env.JWT_SECRET) {
@@ -39,6 +41,8 @@ app.use('/api/auth', (req, res) => {
 app.use('/api/public-auth', (req, res) => {
     res.json({ message: 'Public auth routes - VidangeGo CI Backend' });
 });
+
+app.use('/api/totp', totpRoutes);
 
 app.use('/api/missions', (req, res) => {
     res.json({ message: 'Missions routes - VidangeGo CI Backend' });
